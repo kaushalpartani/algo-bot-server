@@ -3,6 +3,7 @@ from gql import gql, Client
 from gql.transport.aiohttp import AIOHTTPTransport
 from problem_sets.leetcode import LeetcodePS
 from problem_sets.cses import CSESPSet
+from problem_sets.advent_of_code import AdventOfCodePS
 from enum import Enum
 
 
@@ -70,6 +71,13 @@ def process_message(message: ZulipResponse):
         return {
             "content": f"Here's a random CSES problem: {problem_url}"
         }
+    elif ("advent of code" in content) or ("aoc" in content):
+        aoc_ps = AdventOfCodePS()
+        problem_url = aoc_ps._get_random_problem()
+        return {
+            "content": f"Here's a random Advent of Code problem: {problem_url}"
+        }
+
 
     return {
         "content": "empty"
@@ -94,6 +102,11 @@ def get_random_lc_problem(difficulty: LCDifficulty):
 def get_random_cses_problem():
     cses_ps = CSESPSet()
     return RedirectResponse(cses_ps._get_random_problem())
+
+@app.get("/aoc-random-problem")
+def get_random_aoc_problem():
+    aoc_ps = AdventOfCodePS()
+    return RedirectResponse(aoc_ps._get_random_problem())
 
 
     
