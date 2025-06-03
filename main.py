@@ -13,7 +13,7 @@ class ZulipInnerMessage(BaseModel):
     avatar_url: Optional[str]
     client: str
     content: str
-    display_recipient: str
+    display_recipient: Union[str, List[dict]]
     id: int
     is_me_message: bool
     reactions: List[dict]
@@ -23,7 +23,7 @@ class ZulipInnerMessage(BaseModel):
     sender_full_name: str
     sender_id: int
     sender_realm_str: str
-    stream_id: Optional[int]
+    stream_id: Optional[int] = None
     subject: str
     submessages: List[dict]
     timestamp: int
