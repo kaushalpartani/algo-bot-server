@@ -2,6 +2,7 @@ from typing import Union, List, Optional
 from gql import gql, Client
 from gql.transport.aiohttp import AIOHTTPTransport
 from problem_sets.leetcode import LeetcodePS
+from problem_sets.cses import CSESPSet
 from enum import Enum
 
 
@@ -47,23 +48,31 @@ def process_message(message: ZulipResponse):
     content = message.data.lower()
     difficulty = None
     
-    if "easy" in content:
-        difficulty = LCDifficulty.easy
-    elif "medium" in content:
-        difficulty = LCDifficulty.medium
-    elif "hard" in content:
-        difficulty = LCDifficulty.hard
-    
-    if not difficulty:
+    if "leetcode" in content:
+        if "easy" in content:
+            difficulty = LCDifficulty.easy
+        elif "medium" in content:
+            difficulty = LCDifficulty.medium
+        elif "hard" in content:
+            difficulty = LCDifficulty.hard
+        else:
+            return {
+                "content": "no response"
+            }
+        lc_ps = LeetcodePS()
+        problem_url = lc_ps._get_random_problem(difficulty.value.upper())
         return {
-            "content": "Please specify a difficulty level: easy, medium, or hard"
+            "content": f"Here's a random {difficulty.value} LeetCode problem: {problem_url}"
         }
-    
-    lc_ps = LeetcodePS()
-    problem_url = lc_ps._get_random_problem(difficulty.value.upper())
-    
+    elif "cses" in content:
+        cses_ps = CSESPSet()
+        problem_url = cses_ps._get_random_problem()
+        return {
+            "content": f"Here's a random {difficulty.value} CSES problem: {problem_url}"
+        }
+
     return {
-        "content": f"Here's a random {difficulty.value} LeetCode problem: {problem_url}"
+        "content": "empty"
     }
 
 @app.get("/hello")
@@ -81,6 +90,10 @@ def get_random_lc_problem(difficulty: LCDifficulty):
     lc_ps = LeetcodePS()
     return RedirectResponse(lc_ps._get_random_problem(difficulty.value.upper()))
 
+@app.get("/cses-random-problem")
+def get_random_cses_problem():
+    cses_ps = CSESPSet()
+    return RedirectResponse(cses_ps._get_random_problem())
 
 
     

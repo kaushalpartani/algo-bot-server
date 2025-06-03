@@ -5,6 +5,7 @@ from sqlmodel import Field, Session, SQLModel, create_engine, select
 import requests
 from bs4 import BeautifulSoup
 import json
+import random
 
 class CSES(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -14,17 +15,27 @@ class CSES(SQLModel, table=True):
 
 class CSESPSet:
     """
-        return a list of dicts, each dict corresponds to a db record. Eventually will need to batch and send to db.
-        Note, CSES is still adding problems, so this will need to be done semi-regularly
-
+    return a list of dicts, each dict corresponds to a db record. Eventually will need to batch and send to db.
+    Note, CSES is still adding problems, so this will need to be done semi-regularly
     """
     model = CSES
 
-    def _get_pset():
-        url_base = "https://cses.fi"
-        pset_url = f"{url_base}/problemset/list/"
+    def __init__(self):
+        self.url_base = "https://cses.fi"
+        self.pset_url = f"{self.url_base}/problemset/list/"
+    
+    def _get_random_problem(self, topic=None):
+        pset = self._get_pset()
+        print(topic)
         
-        response = requests.get(pset_url)
+        if topic:
+            pset = filter(lambda x: x["category"].lower() == topic, pset)
+        
+        return random.choice(pset)["url"]
+
+
+    def _get_pset(self):
+        response = requests.get(self.pset_url)
         if response.status_code != 200:
             print(f"Failed to fetch the page. Status code: {response.status_code}")
             return
@@ -41,17 +52,12 @@ class CSESPSet:
             for problem in problems:
                 problem_dict = {
                     "id": problem["href"].split("/")[-1],
-                    "url": f"{url_base}{problem['href']}",
+                    "url": f"{self.url_base}{problem['href']}",
                     "category": f"{cat.text}"
                 }
                 return_list.append(problem_dict)
 
-        print(return_list)
+        return return_list
 
-    def load_pset(cls, session: Session):
-        pass
-
-        
-CSESPSet._get_pset()
 
 
