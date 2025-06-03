@@ -44,8 +44,27 @@ app = FastAPI()
 
 @app.post("/")
 def process_message(message: ZulipResponse):
-    print(message)
-    return message
+    content = message.data.lower()
+    difficulty = None
+    
+    if "easy" in content:
+        difficulty = LCDifficulty.easy
+    elif "medium" in content:
+        difficulty = LCDifficulty.medium
+    elif "hard" in content:
+        difficulty = LCDifficulty.hard
+    
+    if not difficulty:
+        return {
+            "content": "Please specify a difficulty level: easy, medium, or hard"
+        }
+    
+    lc_ps = LeetcodePS()
+    problem_url = lc_ps._get_random_problem(difficulty.value.upper())
+    
+    return {
+        "content": f"Here's a random {difficulty.value} LeetCode problem: {problem_url}"
+    }
 
 @app.get("/hello")
 def hello():
