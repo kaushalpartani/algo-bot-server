@@ -1,0 +1,15 @@
+[project]
+name = "algo-bot-server"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "aiohttp>=3.12.7",
+    "beautifulsoup4>=4.13.4",
+    "fastapi[standard]>=0.115.12",
+    "gql>=3.5.3",
+    "pendulum>=3.1.0",
+    "requests>=2.32.3",
+    "sqlmodel>=0.0.24",
+]

@@ -1,0 +1,24 @@
+query dailyCodingQuestionRecords($year: Int!, $month: Int!) {
+  dailyCodingChallengeV2(year: $year, month: $month) {
+    challenges {
+      date
+      userStatus
+      link
+      question {
+        questionFrontendId
+        title
+        titleSlug
+      }
+    }
+    weeklyChallenges {
+      date
+      userStatus
+      link
+      question {
+        questionFrontendId
+        title
+        titleSlug
+      }
+    }
+  }
+}
