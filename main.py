@@ -68,7 +68,7 @@ def process_message(message: ZulipResponse):
         cses_ps = CSESPSet()
         problem_url = cses_ps._get_random_problem()
         return {
-            "content": f"Here's a random {difficulty.value} CSES problem: {problem_url}"
+            "content": f"Here's a random CSES problem: {problem_url}"
         }
 
     return {
