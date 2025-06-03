@@ -1,0 +1,10 @@
+query randomQuestionV2($favoriteSlug: String, $categorySlug: String, $searchKeyword: String, $filtersV2: QuestionFilterInput) {
+  randomQuestionV2(
+    favoriteSlug: $favoriteSlug
+    categorySlug: $categorySlug
+    filtersV2: $filtersV2
+    searchKeyword: $searchKeyword
+  ) {
+    titleSlug
+  }
+}

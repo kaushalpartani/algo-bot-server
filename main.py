@@ -1,9 +1,12 @@
 from typing import Union, List, Optional
 from gql import gql, Client
 from gql.transport.aiohttp import AIOHTTPTransport
+from problem_sets.leetcode import LeetcodePS
+from enum import Enum
 
 
 from fastapi import FastAPI
+from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
 class ZulipInnerMessage(BaseModel):
@@ -47,6 +50,19 @@ def process_message(message: ZulipResponse):
 @app.get("/hello")
 def hello():
     return "hello!"
+
+
+class LCDifficulty(str, Enum):
+    easy = "easy"
+    medium = "medium"
+    hard = "hard"
+
+@app.get("/lc-random-problem/{difficulty}")
+def get_random_lc_problem(difficulty: LCDifficulty):
+    lc_ps = LeetcodePS()
+    return RedirectResponse(lc_ps._get_random_problem(difficulty.value.upper()))
+
+
 
     
 
