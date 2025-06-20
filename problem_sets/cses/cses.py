@@ -5,6 +5,7 @@ from typing import Optional
 import requests
 from bs4 import BeautifulSoup
 from ..problem_set_interface import ProblemSetInterface, ProblemSetOptions
+from ..no_usage_help_formatter import NoUsageHelpFormatter
 
 
 class CSESOptions(ProblemSetOptions):
@@ -26,7 +27,7 @@ class CSESPSet(ProblemSetInterface):
         self.url_base = "https://cses.fi"
         self.pset_url = f"{self.url_base}/problemset/list/"
         
-        self.parser = argparse.ArgumentParser(description="CSES Problem Set")
+        self.parser = argparse.ArgumentParser(description="CSES Problem Set", formatter_class=NoUsageHelpFormatter)
         self.parser.add_argument("--topic", "-t", help="Select a specific topic/category for random problem generation")
 
     def _get_random_problem(self) -> str:
