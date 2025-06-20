@@ -4,6 +4,7 @@ from pydantic import BaseModel
 from typing import Optional, Dict
 import argparse
 from ..problem_set_interface import ProblemSetInterface, ProblemSetOptions
+from ..no_usage_help_formatter import NoUsageHelpFormatter
 
 class AdventOfCodeOptions(ProblemSetOptions):
     """
@@ -29,7 +30,7 @@ class AdventOfCodePS(ProblemSetInterface):
     def __init__(self):
         self.url_base = "https://adventofcode.com/"
         
-        self.parser = argparse.ArgumentParser(description="Advent of Code Problem Set")
+        self.parser = argparse.ArgumentParser(description="Advent of Code Problem Set", formatter_class=NoUsageHelpFormatter)
         self.parser.add_argument("--year", "-y", help="Select a specific year for random problem generation")
 
     def _get_random_problem(self) -> str:

@@ -46,11 +46,7 @@ def response_wrapper(content: str) -> dict:
 
 def help_handler() -> str:
     available_commands = "\n".join(PROBLEM_SET_MAPPING.keys())
-    description = f"""
-    Algobot, created by kaushal partani (s1 2025)
-
-    Algobot is a zulip bot allowing for users to generate random problems from problem sets. The current supported base commands are: {available_commands}
-    """
+    description = f"""Algobot, created by kaushal partani (s1 2025)\nAlgobot is a zulip bot allowing for users to generate random problems from problem sets. The current supported base commands are: {available_commands}"""
     return description
 
 SPECIAL_COMMANDS = {

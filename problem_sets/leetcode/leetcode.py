@@ -12,6 +12,8 @@ from pydantic import BaseModel
 from typing import Optional, List
 import argparse
 from ..problem_set_interface import ProblemSetInterface, ProblemSetOptions
+from ..no_usage_help_formatter import NoUsageHelpFormatter
+
 
 class Leetcode(SQLModel, table=True):
     id: int | None = Field(default=None, primary_key=True)
@@ -38,7 +40,7 @@ class LeetcodePS(ProblemSetInterface):
         self.transport = AIOHTTPTransport(url="https://leetcode.com/graphql/", headers={"Cookie": "", "x-csrftoken": ""})
         self.client = Client(transport=self.transport, fetch_schema_from_transport=False)
         
-        self.parser = argparse.ArgumentParser(description="LeetCode Problem Set")
+        self.parser = argparse.ArgumentParser(description="LeetCode Problem Set", formatter_class=NoUsageHelpFormatter)
         self.parser.add_argument("--difficulty", "-d", choices=["easy", "medium", "hard"], 
                                 help="Select difficulty level for random problem generation")
 
