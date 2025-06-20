@@ -1,11 +1,10 @@
 from typing import Union, List, Optional
 from gql import gql, Client
 from gql.transport.aiohttp import AIOHTTPTransport
-from problem_sets.leetcode import LeetcodePS
-from problem_sets.cses import CSESPSet
-from problem_sets.advent_of_code import AdventOfCodePS
+from problem_sets.leetcode.leetcode import LeetcodePS
+from problem_sets.cses.cses import CSESPSet
+from problem_sets.advent_of_code.advent_of_code import AdventOfCodePS
 from enum import Enum
-
 
 from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
@@ -40,76 +39,61 @@ class ZulipResponse(BaseModel):
     token: str
     trigger: str
 
-
 app = FastAPI()
 
+def help_handler() -> str:
+    available_commands = "\n".join(PROBLEM_SET_MAPPING.keys())
+    description = f"""
+    Algobot, created by kaushal partani (s1 2025)
+
+    Algobot is a zulip bot allowing for users to generate random problems from problem sets. The current supported base commands are: {available_commands}
+    """
+    return description
+
+SPECIAL_COMMANDS = {
+    "help": help_handler
+}
+
+PROBLEM_SET_MAPPING = {
+    "leetcode": LeetcodePS,
+    "lc": LeetcodePS,
+    "advent_of_code": AdventOfCodePS,
+    "aoc": AdventOfCodePS,
+    "cses": CSESPSet,
+}
 
 @app.post("/")
 def process_message(message: ZulipResponse):
-    content = message.data.lower()
-    difficulty = None
-    
-    if "leetcode" in content:
-        if "easy" in content:
-            difficulty = LCDifficulty.easy
-        elif "medium" in content:
-            difficulty = LCDifficulty.medium
-        elif "hard" in content:
-            difficulty = LCDifficulty.hard
-        else:
-            return {
-                "content": "no response"
-            }
-        lc_ps = LeetcodePS()
-        problem_url = lc_ps._get_random_problem(difficulty.value.upper())
-        return {
-            "content": f"Here's a random {difficulty.value} LeetCode problem: {problem_url}"
-        }
-    elif "cses" in content:
-        cses_ps = CSESPSet()
-        problem_url = cses_ps._get_random_problem()
-        return {
-            "content": f"Here's a random CSES problem: {problem_url}"
-        }
-    elif ("advent of code" in content) or ("aoc" in content):
-        aoc_ps = AdventOfCodePS()
-        problem_url = aoc_ps._get_random_problem()
-        return {
-            "content": f"Here's a random Advent of Code problem: {problem_url}"
-        }
+    content = message.data.lower().split(" ", 1)
+    command = content[0]
+    if len(content) > 1:
+        options = content[1]
+    else:
+        options = ""
 
+    if command in SPECIAL_COMMANDS:
+        return SPECIAL_COMMANDS[command]() 
+    elif command in PROBLEM_SET_MAPPING:
+        problem_set_class = PROBLEM_SET_MAPPING[command]
+        problem_set = problem_set_class()
+        return problem_set.process_command(options)
+    else:
+        return f"Unknown command '{command}'. Try running the `help` command for more details."
 
-    return {
-        "content": "empty"
-    }
-
-@app.get("/hello")
-def hello():
-    return "hello!"
-
-
-class LCDifficulty(str, Enum):
-    easy = "easy"
-    medium = "medium"
-    hard = "hard"
-
-@app.get("/lc-random-problem/{difficulty}")
-def get_random_lc_problem(difficulty: LCDifficulty):
+@app.get("/lc-random-problem")
+def get_random_lc_problem(difficulty: Optional[str] = None):
     lc_ps = LeetcodePS()
-    return RedirectResponse(lc_ps._get_random_problem(difficulty.value.upper()))
+    options = f"-d {difficulty}" if difficulty else ""
+    return lc_ps.process_command(options)
 
 @app.get("/cses-random-problem")
-def get_random_cses_problem():
+def get_random_cses_problem(topic: Optional[str] = None):
     cses_ps = CSESPSet()
-    return RedirectResponse(cses_ps._get_random_problem())
+    options = f"-t {topic}" if topic else ""
+    return cses_ps.process_command(options)
 
 @app.get("/aoc-random-problem")
-def get_random_aoc_problem():
+def get_random_aoc_problem(year: Optional[str] = None):
     aoc_ps = AdventOfCodePS()
-    return RedirectResponse(aoc_ps._get_random_problem())
-
-
-    
-
-        
-
+    options = f"-y {year}" if year else ""
+    return aoc_ps.process_command(options)
