@@ -54,7 +54,7 @@ def response_wrapper(content: str) -> dict:
 
 def help_handler() -> str:
     available_commands = "\n".join(PROBLEM_SET_MAPPING.keys())
-    return DESCRIPTION.format(available_commands)
+    return DESCRIPTION.format(available_commands=available_commands)
 
 SPECIAL_COMMANDS = {
     "help": help_handler
