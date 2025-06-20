@@ -10,6 +10,14 @@ from fastapi import FastAPI
 from fastapi.responses import RedirectResponse
 from pydantic import BaseModel
 
+DESCRIPTION = """
+ProblemSetPicker, created by kaushal partani (s1 2025)
+
+ProblemSetPicker is a zulip bot allowing for users to generate random problems from problem sets. 
+
+The current supported base commands are:
+```{available_commands}```
+"""
 class ZulipInnerMessage(BaseModel):
     avatar_url: Optional[str]
     client: str
@@ -46,8 +54,7 @@ def response_wrapper(content: str) -> dict:
 
 def help_handler() -> str:
     available_commands = "\n".join(PROBLEM_SET_MAPPING.keys())
-    description = f"""ProblemSetPicker, created by kaushal partani (s1 2025)\nProblemSetPicker is a zulip bot allowing for users to generate random problems from problem sets. The current supported base commands are:\n ```{available_commands}```"""
-    return description
+    return DESCRIPTION.format(available_commands)
 
 SPECIAL_COMMANDS = {
     "help": help_handler
