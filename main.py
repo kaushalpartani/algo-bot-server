@@ -31,7 +31,7 @@ class ZulipInnerMessage(BaseModel):
     topic_links: List[dict]
     type: str
 
-class ZulipResponse(BaseModel):
+class ZulipMessage(BaseModel):
     bot_email: str
     bot_full_name: str
     data: str
@@ -40,6 +40,9 @@ class ZulipResponse(BaseModel):
     trigger: str
 
 app = FastAPI()
+
+def response_wrapper(content: str) -> dict:
+    return {"content": content}
 
 def help_handler() -> str:
     available_commands = "\n".join(PROBLEM_SET_MAPPING.keys())
@@ -63,7 +66,7 @@ PROBLEM_SET_MAPPING = {
 }
 
 @app.post("/")
-def process_message(message: ZulipResponse):
+def process_message(message: ZulipMessage):
     content = message.data.lower().split(" ", 1)
     command = content[0]
     if len(content) > 1:
@@ -72,13 +75,13 @@ def process_message(message: ZulipResponse):
         options = ""
 
     if command in SPECIAL_COMMANDS:
-        return SPECIAL_COMMANDS[command]() 
+        return response_wrapper(SPECIAL_COMMANDS[command]())
     elif command in PROBLEM_SET_MAPPING:
         problem_set_class = PROBLEM_SET_MAPPING[command]
         problem_set = problem_set_class()
-        return problem_set.process_command(options)
+        return response_wrapper(problem_set.process_command(options))
     else:
-        return f"Unknown command '{command}'. Try running the `help` command for more details."
+        return response_wrapper(f"Unknown command '{command}'. Try running the `help` command for more details.")
 
 @app.get("/lc-random-problem")
 def get_random_lc_problem(difficulty: Optional[str] = None):
