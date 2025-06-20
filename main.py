@@ -72,12 +72,19 @@ PROBLEM_SET_MAPPING = {
 
 @app.post("/")
 def process_message(message: ZulipMessage):
-    content = message.data.lower().split(" ", 1)
-    command = content[0]
-    if len(content) > 1:
-        options = content[1]
-    else:
-        options = ""
+    content = message.data.lower().strip()
+    # Two cases of bot being called, one is a tagged call, the other is a dm. In the tagged call case, the @botname is included in the message content.
+    if content.startswith('@'):
+        command_and_option = content.split(" ", 1)
+        if len(command_and_option) > 1:
+            content = command_and_option[1]
+        else:
+            return response_wrapper(f"Unknown command '{command}'. Try running the `help` command for more details.")
+
+    # In the case the message is a dm, no extra handling is needed
+    content_parts = content.split(" ", 1)
+    command = content_parts[0]
+    options = content_parts[1] if len(content_parts) > 1 else ""
 
     if command in SPECIAL_COMMANDS:
         return response_wrapper(SPECIAL_COMMANDS[command]())
