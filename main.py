@@ -15,6 +15,8 @@ ProblemSetPicker, created by kaushal partani (s1 2025)
 
 ProblemSetPicker is a zulip bot allowing for users to generate random problems from problem sets. 
 
+Source code can be found here: https://github.com/kaushalpartani/problem-set-picker
+
 The current supported base commands are:
 ```
 {available_commands}
