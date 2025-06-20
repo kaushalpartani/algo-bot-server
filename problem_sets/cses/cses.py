@@ -38,7 +38,7 @@ class CSESPSet(ProblemSetInterface):
         if self.options.topic:
             pset = list(filter(lambda x: x["category"].lower() == self.options.topic, pset))
             if not pset:
-                return f"No problems found for topic: {self.options.topic}. Valid options: {valid_topics}"
+                return f"No problems found for topic: {self.options.topic}. Valid options:\n ```{valid_topics}```"
         
         if not pset:
             return "No problems available"
